@@ -307,6 +307,16 @@ export default function Navbar() {
                           <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </Link>
 
+                         {/* New Arrivals Section */}
+                        <Link
+                          href="/products?category=New Arrivals"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors flex items-center justify-between group"
+                        >
+                          <span className="font-medium">New Arrivals</span>
+                          <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
+
                         <div className="h-px bg-slate-700" />
 
                         {/* View All Products */}
