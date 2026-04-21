@@ -142,4 +142,44 @@ router.post("/reset-password", async (req, res) => {
     }
 });
 
+// Create Admin (Special endpoint for initial setup)
+router.post("/create-admin", async (req, res) => {
+    try {
+        const { email, password, secret } = req.body;
+
+        // Check if secret token is correct
+        if (secret !== "admin_setup_secret_key_2024") {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
+        // Check if admin already exists
+        const existingAdmin = await User.findOne({ email: "admin@gmail.com" });
+        if (existingAdmin) {
+            return res.status(400).json({ message: "Admin user already exists" });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create admin user
+        const adminUser = new User({
+            name: "Admin",
+            email: "admin@gmail.com",
+            password: hashedPassword,
+            role: "admin",
+            phone: "+1234567890",
+            isActive: true
+        });
+
+        await adminUser.save();
+
+        res.status(201).json({ 
+            message: "Admin user created successfully",
+            admin: { id: adminUser._id, name: adminUser.name, email: adminUser.email, role: adminUser.role }
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
 module.exports = router;
