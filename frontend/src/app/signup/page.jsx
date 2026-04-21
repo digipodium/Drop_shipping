@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { User, Mail, Lock, Phone, ArrowRight, PackageOpen } from "lucide-react";
+import { User, Mail, Lock, Phone, ArrowRight, PackageOpen, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -21,6 +21,7 @@ const SignupSchema = Yup.object().shape({
 
 export default function SignupPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async (values, { setSubmitting }) => {
     try {
@@ -155,7 +156,19 @@ export default function SignupPage() {
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-blue-500 transition-colors">
                         <Lock className="h-5 w-5" />
                       </div>
-                      <Field name="password" type="password" placeholder="••••••••" className="w-full bg-slate-900/50 border border-slate-800 rounded-xl pl-11 pr-4 py-3.5 text-white placeholder:text-slate-600 focus:border-blue-500/50 focus:bg-slate-900 focus:ring-4 focus:ring-blue-500/10 focus:outline-none transition-all shadow-sm" />
+                      <Field 
+                        name="password" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        className="w-full bg-slate-900/50 border border-slate-800 rounded-xl pl-11 pr-12 py-3.5 text-white placeholder:text-slate-600 focus:border-blue-500/50 focus:bg-slate-900 focus:ring-4 focus:ring-blue-500/10 focus:outline-none transition-all shadow-sm" 
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-blue-500 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
                     </div>
                     <ErrorMessage name="password" component="p" className="text-error text-xs mt-1.5 font-medium" />
                   </div>
