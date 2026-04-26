@@ -1,10 +1,11 @@
 const express = require("express");
 const Review = require("../models/Review");
+const Order = require("../models/Order");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// @desc Create a product rating or supplier rating (Module 12)
+// @desc Create a product rating or supplier rating 
 router.post("/", authMiddleware, async (req, res) => {
     try {
         const { product, supplier, rating, comment } = req.body;
@@ -29,7 +30,7 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-// @desc Process instant feedback popup (Module 13)
+// @desc Process instant feedback popup 
 router.post("/instant", authMiddleware, async (req, res) => {
     try {
         const { rating, comment, orderId } = req.body; 
@@ -41,8 +42,15 @@ router.post("/instant", authMiddleware, async (req, res) => {
             description: `Order Feedback (#${orderId?.substring(0,8)})`
         });
         await feedback.save();
+
+        // Update the order to mark that feedback has been received
+        if (orderId) {
+            await Order.findByIdAndUpdate(orderId, { hasFeedback: true });
+        }
+
         res.status(201).json({ message: "Feedback saved!" });
     } catch (err) {
+        console.error("Feedback Error:", err);
         res.status(500).json({ message: "Error saving feedback" });
     }
 });
@@ -50,7 +58,7 @@ router.post("/instant", authMiddleware, async (req, res) => {
 // Get all reviews for the dashboard
 router.get("/dashboard-reviews", authMiddleware, async (req, res) => {
     try {
-        const reviews = await Review.find().populate("user", "name").sort({ createdAt: -1 }).limit(10);
+        const reviews = await Review.find().populate("user", "name").sort({ createdAt: -1 });
         res.json(reviews);
     } catch(err) {
         res.status(500).json({ message: "Server error" });

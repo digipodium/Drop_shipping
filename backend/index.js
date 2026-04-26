@@ -26,7 +26,7 @@ app.use("/api/payments", paymentRoutes);
 
 // Basic Route
 app.get("/", (req, res) => {
-    res.send("Drop Shipping API is running.");
+ res.send("Drop Shipping API is running.");
 });
 
 // Database Connection
@@ -38,11 +38,11 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 
 mongoose
-    .connect(MONGO_URI)
-    .then(() => {
-        console.log("Connected to MongoDB successfully");
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    })
-    .catch((error) => console.log("Database connection error:", error));
+.connect(MONGO_URI)
+.then(() => {
+ console.log("Connected to MongoDB successfully");
+ app.listen(PORT, () => {
+ console.log(`Server is running on port ${PORT}`);
+ });
+ })
+.catch((error) => console.log("Database connection error:", error));
