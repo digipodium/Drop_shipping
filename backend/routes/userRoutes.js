@@ -1,11 +1,8 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { authMiddleware, authorizeRoles } = require("../middleware/authMiddleware");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "dropshipping_super_secret_key";
-
-const { authMiddleware, authorizeRoles } = require("../middleware/authMiddleware");
 
 // Get All Users (Admin/Seller Only) - Role Management
 router.get("/all", authMiddleware, authorizeRoles("admin", "seller"), async (req, res) => {
@@ -38,7 +35,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
     }
 });
 
-// Update User Address (one-time change enforced on frontend)
+// Update User Address
 router.put("/address", authMiddleware, async (req, res) => {
     try {
         const { street, city, state, zip, country } = req.body;
@@ -48,6 +45,38 @@ router.put("/address", authMiddleware, async (req, res) => {
             { new: true }
         ).select("-password");
         res.status(200).json({ message: "Address updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
+// Update User Location (lat/lng) for Quick Delivery
+router.put("/location", authMiddleware, async (req, res) => {
+    try {
+        const { lat, lng } = req.body;
+        if (lat === undefined || lng === undefined) {
+            return res.status(400).json({ message: "Latitude and Longitude are required" });
+        }
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { location: { lat, lng } },
+            { new: true }
+        ).select("-password");
+        res.status(200).json({ message: "Location updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
+// Fetch locations for a list of user IDs (Suppliers)
+router.post("/locations", authMiddleware, async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) {
+            return res.status(400).json({ message: "List of IDs is required" });
+        }
+        const users = await User.find({ _id: { $in: ids } }).select("location");
+        res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
     }

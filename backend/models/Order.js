@@ -18,20 +18,20 @@ const orderSchema = new mongoose.Schema(
                     ref: "Product",
                     required: true,
                 },
-                supplier: { // Module 7: Automated Order Forwarding
+                supplier: { // Automated Order Forwarding
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "User",
                     required: true,
                 }
             },
         ],
-        shippingAddress: { // Module 9: Doorstep Address Change allows editing this pre-dispatch
+        shippingAddress: { // Doorstep Address Change allows editing this pre-dispatch
             address: { type: String, required: true },
             city: { type: String, required: true },
             postalCode: { type: String, required: true },
             country: { type: String, required: true },
         },
-        paymentMethod: { type: String, required: true, default: "Card" }, // Module 10
+        paymentMethod: { type: String, required: true, default: "Card" },
         paymentResult: {
             id: { type: String },
             status: { type: String },
@@ -42,27 +42,28 @@ const orderSchema = new mongoose.Schema(
         taxPrice: { type: Number, required: true, default: 0.0 },
         shippingPrice: { type: Number, required: true, default: 0.0 },
         totalPrice: { type: Number, required: true, default: 0.0 },
-        
+
         isPaid: { type: Boolean, required: true, default: false },
         paidAt: { type: Date },
-        
+
         isDelivered: { type: Boolean, required: true, default: false },
         deliveredAt: { type: Date },
 
-        status: { // Module 6: Order Management
+        status: { // Order Management
             type: String,
             enum: ["Pending", "Processing", "Forwarded", "Dispatched", "Out for Delivery", "Delivered", "Cancelled"],
             default: "Pending"
         },
-        
-        isFastDelivery: { type: Boolean, default: false }, // Module 8: Quick Delivery handler
 
-        returnRequest: { // Module 11: Return & Refund System
+        isFastDelivery: { type: Boolean, default: false }, // Quick Delivery handler
+
+        returnRequest: { // Return & Refund System
             isRequested: { type: Boolean, default: false },
             reason: { type: String },
             imageUrl: { type: String }, // Proof of damage/issue
             status: { type: String, enum: ["None", "Pending", "Approved", "Rejected", "Refunded"], default: "None" }
-        }
+        },
+        hasFeedback: { type: Boolean, default: false }
     },
     { timestamps: true }
 );
